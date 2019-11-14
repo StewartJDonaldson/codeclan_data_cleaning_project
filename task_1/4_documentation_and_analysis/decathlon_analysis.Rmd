@@ -96,13 +96,13 @@ top_three_shot_putters_olympicg
 ```{r}
 decathlon_data %>%
   filter(event == "x400m", time_distance < 50) %>%
-  summarise(mean(total_points))
+  summarise(average_points_under_50s = mean(total_points))
 ```
 
 ```{r}
 decathlon_data %>%
   filter(event == "x400m", time_distance > 50) %>%
-  summarise(mean(total_points))
+  summarise(average_points_over_50s = mean(total_points))
 ```
 
 
