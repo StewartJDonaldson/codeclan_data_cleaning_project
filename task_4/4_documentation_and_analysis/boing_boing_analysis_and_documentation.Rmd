@@ -12,7 +12,9 @@ The Boing Boing Halloween Candy Survey has been running since 2014 and is design
 For the analysis I looked at the data collected from 2015, 2016 and 2017, which can be found in these files below:
 
 `boing-boing-candy-2015.xlsx`
+
 `boing-boing-candy-2016.xlsx`
+
 `boing-boing-candy-2015.xlsx`
 
 # 2. Assumptions
@@ -30,6 +32,41 @@ For the analysis I looked at the data collected from 2015, 2016 and 2017, which 
 As each data set was different in terms of the naming of columns and the order in which the columns were presented, it was decided that the best approach was to clean each data set seperately and pull each into a unified format before joining them all together.
 
 Each step below was combined into a pipe `%>%` to make the code **easier to understand**, **reproducible** and **help with processing power.**
+
+```{r, echo=FALSE, eval=TRUE, message=FALSE}
+# Loading in three data files
+
+library(tidyverse)
+library(readxl)
+library(here)
+library(janitor)
+
+boing_boing_2015 <- read_excel(here("1_raw_data/boing-boing-candy-2015.xlsx"))
+boing_boing_2016 <- read_excel(here("1_raw_data/boing-boing-candy-2016.xlsx"))
+boing_boing_2017 <- read_excel(here("1_raw_data/boing-boing-candy-2017.xlsx"))
+
+```
+
+## Pre cleaning checks
+
+* Checking the dimensions
+
+```{r}
+dim(boing_boing_2017)
+```
+
+* Checking the column names
+
+```{r}
+names(boing_boing_2017)
+```
+
+
+* Checking the structure of the date
+
+```{r}
+view(boing_boing_2017)
+```
 
 ## 1. Cleaning column names
 

@@ -373,7 +373,9 @@ summary {
 <h1>1. Introduction to the dataset</h1>
 <p>The Boing Boing Halloween Candy Survey has been running since 2014 and is designed to find out what is the top preferred confectionary is during trick or treat season.</p>
 <p>For the analysis I looked at the data collected from 2015, 2016 and 2017, which can be found in these files below:</p>
-<p><code>boing-boing-candy-2015.xlsx</code> <code>boing-boing-candy-2016.xlsx</code> <code>boing-boing-candy-2015.xlsx</code></p>
+<p><code>boing-boing-candy-2015.xlsx</code></p>
+<p><code>boing-boing-candy-2016.xlsx</code></p>
+<p><code>boing-boing-candy-2015.xlsx</code></p>
 </div>
 <div id="assumptions" class="section level1">
 <h1>2. Assumptions</h1>
@@ -393,6 +395,142 @@ summary {
 <h1>4. Steps to clean the data</h1>
 <p>As each data set was different in terms of the naming of columns and the order in which the columns were presented, it was decided that the best approach was to clean each data set seperately and pull each into a unified format before joining them all together.</p>
 <p>Each step below was combined into a pipe <code>%&gt;%</code> to make the code <strong>easier to understand</strong>, <strong>reproducible</strong> and <strong>help with processing power.</strong></p>
+<div id="pre-cleaning-checks" class="section level2">
+<h2>Pre cleaning checks</h2>
+<ul>
+<li>Checking the dimensions</li>
+</ul>
+<pre class="r"><code>dim(boing_boing_2017)</code></pre>
+<pre><code>## [1] 2460  120</code></pre>
+<ul>
+<li>Checking the column names</li>
+</ul>
+<pre class="r"><code>names(boing_boing_2017)</code></pre>
+<pre><code>##   [1] &quot;Internal ID&quot;                                                                           
+##   [2] &quot;Q1: GOING OUT?&quot;                                                                        
+##   [3] &quot;Q2: GENDER&quot;                                                                            
+##   [4] &quot;Q3: AGE&quot;                                                                               
+##   [5] &quot;Q4: COUNTRY&quot;                                                                           
+##   [6] &quot;Q5: STATE, PROVINCE, COUNTY, ETC&quot;                                                      
+##   [7] &quot;Q6 | 100 Grand Bar&quot;                                                                    
+##   [8] &quot;Q6 | Anonymous brown globs that come in black and orange wrappers\t(a.k.a. Mary Janes)&quot;
+##   [9] &quot;Q6 | Any full-sized candy bar&quot;                                                         
+##  [10] &quot;Q6 | Black Jacks&quot;                                                                      
+##  [11] &quot;Q6 | Bonkers (the candy)&quot;                                                              
+##  [12] &quot;Q6 | Bonkers (the board game)&quot;                                                         
+##  [13] &quot;Q6 | Bottle Caps&quot;                                                                      
+##  [14] &quot;Q6 | Box'o'Raisins&quot;                                                                    
+##  [15] &quot;Q6 | Broken glow stick&quot;                                                                
+##  [16] &quot;Q6 | Butterfinger&quot;                                                                     
+##  [17] &quot;Q6 | Cadbury Creme Eggs&quot;                                                               
+##  [18] &quot;Q6 | Candy Corn&quot;                                                                       
+##  [19] &quot;Q6 | Candy that is clearly just the stuff given out for free at restaurants&quot;           
+##  [20] &quot;Q6 | Caramellos&quot;                                                                       
+##  [21] &quot;Q6 | Cash, or other forms of legal tender&quot;                                             
+##  [22] &quot;Q6 | Chardonnay&quot;                                                                       
+##  [23] &quot;Q6 | Chick-o-Sticks (we don’t know what that is)&quot;                                      
+##  [24] &quot;Q6 | Chiclets&quot;                                                                         
+##  [25] &quot;Q6 | Coffee Crisp&quot;                                                                     
+##  [26] &quot;Q6 | Creepy Religious comics/Chick Tracts&quot;                                             
+##  [27] &quot;Q6 | Dental paraphenalia&quot;                                                              
+##  [28] &quot;Q6 | Dots&quot;                                                                             
+##  [29] &quot;Q6 | Dove Bars&quot;                                                                        
+##  [30] &quot;Q6 | Fuzzy Peaches&quot;                                                                    
+##  [31] &quot;Q6 | Generic Brand Acetaminophen&quot;                                                      
+##  [32] &quot;Q6 | Glow sticks&quot;                                                                      
+##  [33] &quot;Q6 | Goo Goo Clusters&quot;                                                                 
+##  [34] &quot;Q6 | Good N' Plenty&quot;                                                                   
+##  [35] &quot;Q6 | Gum from baseball cards&quot;                                                          
+##  [36] &quot;Q6 | Gummy Bears straight up&quot;                                                          
+##  [37] &quot;Q6 | Hard Candy&quot;                                                                       
+##  [38] &quot;Q6 | Healthy Fruit&quot;                                                                    
+##  [39] &quot;Q6 | Heath Bar&quot;                                                                        
+##  [40] &quot;Q6 | Hershey's Dark Chocolate&quot;                                                         
+##  [41] &quot;Q6 | Hershey’s Milk Chocolate&quot;                                                         
+##  [42] &quot;Q6 | Hershey's Kisses&quot;                                                                 
+##  [43] &quot;Q6 | Hugs (actual physical hugs)&quot;                                                      
+##  [44] &quot;Q6 | Jolly Rancher (bad flavor)&quot;                                                       
+##  [45] &quot;Q6 | Jolly Ranchers (good flavor)&quot;                                                     
+##  [46] &quot;Q6 | JoyJoy (Mit Iodine!)&quot;                                                             
+##  [47] &quot;Q6 | Junior Mints&quot;                                                                     
+##  [48] &quot;Q6 | Senior Mints&quot;                                                                     
+##  [49] &quot;Q6 | Kale smoothie&quot;                                                                    
+##  [50] &quot;Q6 | Kinder Happy Hippo&quot;                                                               
+##  [51] &quot;Q6 | Kit Kat&quot;                                                                          
+##  [52] &quot;Q6 | LaffyTaffy&quot;                                                                       
+##  [53] &quot;Q6 | LemonHeads&quot;                                                                       
+##  [54] &quot;Q6 | Licorice (not black)&quot;                                                             
+##  [55] &quot;Q6 | Licorice (yes black)&quot;                                                             
+##  [56] &quot;Q6 | Lindt Truffle&quot;                                                                    
+##  [57] &quot;Q6 | Lollipops&quot;                                                                        
+##  [58] &quot;Q6 | Mars&quot;                                                                             
+##  [59] &quot;Q6 | Maynards&quot;                                                                         
+##  [60] &quot;Q6 | Mike and Ike&quot;                                                                     
+##  [61] &quot;Q6 | Milk Duds&quot;                                                                        
+##  [62] &quot;Q6 | Milky Way&quot;                                                                        
+##  [63] &quot;Q6 | Regular M&amp;Ms&quot;                                                                     
+##  [64] &quot;Q6 | Peanut M&amp;M’s&quot;                                                                     
+##  [65] &quot;Q6 | Blue M&amp;M's&quot;                                                                       
+##  [66] &quot;Q6 | Red M&amp;M's&quot;                                                                        
+##  [67] &quot;Q6 | Green Party M&amp;M's&quot;                                                                
+##  [68] &quot;Q6 | Independent M&amp;M's&quot;                                                                
+##  [69] &quot;Q6 | Abstained from M&amp;M'ing.&quot;                                                          
+##  [70] &quot;Q6 | Minibags of chips&quot;                                                                
+##  [71] &quot;Q6 | Mint Kisses&quot;                                                                      
+##  [72] &quot;Q6 | Mint Juleps&quot;                                                                      
+##  [73] &quot;Q6 | Mr. Goodbar&quot;                                                                      
+##  [74] &quot;Q6 | Necco Wafers&quot;                                                                     
+##  [75] &quot;Q6 | Nerds&quot;                                                                            
+##  [76] &quot;Q6 | Nestle Crunch&quot;                                                                    
+##  [77] &quot;Q6 | Now'n'Laters&quot;                                                                     
+##  [78] &quot;Q6 | Peeps&quot;                                                                            
+##  [79] &quot;Q6 | Pencils&quot;                                                                          
+##  [80] &quot;Q6 | Pixy Stix&quot;                                                                        
+##  [81] &quot;Q6 | Real Housewives of Orange County Season 9 Blue-Ray&quot;                               
+##  [82] &quot;Q6 | Reese’s Peanut Butter Cups&quot;                                                       
+##  [83] &quot;Q6 | Reese's Pieces&quot;                                                                   
+##  [84] &quot;Q6 | Reggie Jackson Bar&quot;                                                               
+##  [85] &quot;Q6 | Rolos&quot;                                                                            
+##  [86] &quot;Q6 | Sandwich-sized bags filled with BooBerry Crunch&quot;                                  
+##  [87] &quot;Q6 | Skittles&quot;                                                                         
+##  [88] &quot;Q6 | Smarties (American)&quot;                                                              
+##  [89] &quot;Q6 | Smarties (Commonwealth)&quot;                                                          
+##  [90] &quot;Q6 | Snickers&quot;                                                                         
+##  [91] &quot;Q6 | Sourpatch Kids (i.e. abominations of nature)&quot;                                     
+##  [92] &quot;Q6 | Spotted Dick&quot;                                                                     
+##  [93] &quot;Q6 | Starburst&quot;                                                                        
+##  [94] &quot;Q6 | Sweet Tarts&quot;                                                                      
+##  [95] &quot;Q6 | Swedish Fish&quot;                                                                     
+##  [96] &quot;Q6 | Sweetums (a friend to diabetes)&quot;                                                  
+##  [97] &quot;Q6 | Take 5&quot;                                                                           
+##  [98] &quot;Q6 | Tic Tacs&quot;                                                                         
+##  [99] &quot;Q6 | Those odd marshmallow circus peanut things&quot;                                       
+## [100] &quot;Q6 | Three Musketeers&quot;                                                                 
+## [101] &quot;Q6 | Tolberone something or other&quot;                                                     
+## [102] &quot;Q6 | Trail Mix&quot;                                                                        
+## [103] &quot;Q6 | Twix&quot;                                                                             
+## [104] &quot;Q6 | Vials of pure high fructose corn syrup, for main-lining into your vein&quot;           
+## [105] &quot;Q6 | Vicodin&quot;                                                                          
+## [106] &quot;Q6 | Whatchamacallit Bars&quot;                                                             
+## [107] &quot;Q6 | White Bread&quot;                                                                      
+## [108] &quot;Q6 | Whole Wheat anything&quot;                                                             
+## [109] &quot;Q6 | York Peppermint Patties&quot;                                                          
+## [110] &quot;Q7: JOY OTHER&quot;                                                                         
+## [111] &quot;Q8: DESPAIR OTHER&quot;                                                                     
+## [112] &quot;Q9: OTHER COMMENTS&quot;                                                                    
+## [113] &quot;Q10: DRESS&quot;                                                                            
+## [114] &quot;...114&quot;                                                                                
+## [115] &quot;Q11: DAY&quot;                                                                              
+## [116] &quot;Q12: MEDIA [Daily Dish]&quot;                                                               
+## [117] &quot;Q12: MEDIA [Science]&quot;                                                                  
+## [118] &quot;Q12: MEDIA [ESPN]&quot;                                                                     
+## [119] &quot;Q12: MEDIA [Yahoo]&quot;                                                                    
+## [120] &quot;Click Coordinates (x, y)&quot;</code></pre>
+<ul>
+<li>Checking the structure of the date</li>
+</ul>
+<pre class="r"><code>view(boing_boing_2017)</code></pre>
+</div>
 <div id="cleaning-column-names" class="section level2">
 <h2>1. Cleaning column names</h2>
 <p>After loading in the data the first step was the clean the column names.</p>
