@@ -333,13 +333,13 @@ unique(boing_boing_2017_clean$country)
 ```
 
 ```{r}
-
+# Binding 2016 and 2017 data onto 2015 data
 boing_boing_data_combined <- bind_rows(boing_boing_2015_clean, boing_boing_2016_clean, boing_boing_2017_clean)
 ```
  
 ```{r}
-view(boing_boing_data_combined)
+# Writing the final data file to csv
+write_csv(boing_boing_data_combined, here("/3_clean_data/boing_boing_clean_data.csv"))
 ```
- 
  
   
