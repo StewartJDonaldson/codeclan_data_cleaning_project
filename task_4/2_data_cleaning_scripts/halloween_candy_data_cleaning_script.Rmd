@@ -1,0 +1,345 @@
+```{r}
+# Loading in three data files
+
+library(tidyverse)
+library(readxl)
+library(here)
+
+
+
+boing_boing_2015 <- read_excel(here("1_raw_data/boing-boing-candy-2015.xlsx"))
+boing_boing_2016 <- read_excel(here("1_raw_data/boing-boing-candy-2016.xlsx"))
+boing_boing_2017 <- read_excel(here("1_raw_data/boing-boing-candy-2017.xlsx"))
+
+```
+
+```{r}
+# Cleaning column names in boing boing 2015 data
+
+library(janitor)
+
+boing_boing_2015_clean_names <- clean_names(boing_boing_2015)
+
+```
+
+```{R}
+# Cleaning boing boing 2015 data
+
+boing_boing_2015_clean <- boing_boing_2015_clean_names %>%
+
+# Removing all columns that are not needed for the analysis
+  select(
+    -timestamp,
+    -please_leave_any_remarks_or_comments_regarding_your_choices,
+    -please_list_any_items_not_included_above_that_give_you_joy,
+    -please_list_any_items_not_included_above_that_give_you_despair,
+    -guess_the_number_of_mints_in_my_hand,
+    -betty_or_veronica,
+    -check_all_that_apply_i_cried_tears_of_sadness_at_the_end_of,
+    -that_dress_that_went_viral_early_this_year_when_i_first_saw_it_it_was,
+    -fill_in_the_blank_taylor_swift_is_a_force_for,
+    -what_is_your_favourite_font,
+    -if_you_squint_really_hard_the_words_intelligent_design_would_look_like,
+    -fill_in_the_blank_imitation_is_a_form_of,
+    -which_day_do_you_prefer_friday_or_sunday,
+    -please_estimate_the_degree_s_of_separation_you_have_from_the_following_celebrities_jk_rowling,
+    -please_estimate_the_degrees_of_separation_you_have_from_the_following_folks_jk_rowling,
+    -please_estimate_the_degrees_of_separation_you_have_from_the_following_folks_malala_yousafzai,
+    -please_estimate_the_degrees_of_separation_you_have_from_the_following_folks_thom_yorke,
+    -please_estimate_the_degree_s_of_separation_you_have_from_the_following_celebrities_jj_abrams,
+    -please_estimate_the_degrees_of_separation_you_have_from_the_following_folks_jj_abrams,
+    -please_estimate_the_degrees_of_separation_you_have_from_the_following_folks_hillary_clinton,
+    -please_estimate_the_degrees_of_separation_you_have_from_the_following_folks_donald_trump,
+    -please_estimate_the_degree_s_of_separation_you_have_from_the_following_celebrities_bieber,
+    -please_estimate_the_degree_s_of_separation_you_have_from_the_following_celebrities_kevin_bacon,
+    -please_estimate_the_degree_s_of_separation_you_have_from_the_following_celebrities_francis_bacon_1561_1626,
+    -please_estimate_the_degree_s_of_separation_you_have_from_the_following_celebrities_beyonce,
+    -please_estimate_the_degrees_of_separation_you_have_from_the_following_folks_beyonce_knowles,
+    -please_estimate_the_degrees_of_separation_you_have_from_the_following_folks_bruce_lee
+  ) %>%
+  
+  # Renaming "How old are you?" and "Are you going actually going trick or treating yourself?" columns
+  rename(
+    age = "how_old_are_you",
+    trick_or_treating = "are_you_going_actually_going_trick_or_treating_yourself"
+    ) %>%
+  
+  # Reshaping data into longer format
+  pivot_longer(
+    col = butterfinger:necco_wafers, 
+    names_to = "questions", 
+    values_to = "response"
+    ) %>%
+  
+  # Creating two new columns:
+      #1) year - to identify what year each data is from when it is joined together 
+      #2) country - pre-empting the columns needed when 2016 and 2017 data is joined (which both have country data) 
+  add_column(
+    gender = NA, 
+    country = NA, 
+    year = 2015
+    ) %>%
+  
+  # Get columns in the correct order as 2016 and 2017 data so the join will be easier
+  select(
+    trick_or_treating, 
+    gender, 
+    age, 
+    country, 
+    questions, 
+    response, year
+    ) %>%
+  
+  # Tidying up the "age" column so all values are whole numbers and all strings in "response" and "trick_or_treating" columns are lower case
+  mutate(
+    age = as.integer(age), 
+    response = str_to_lower(response),
+    trick_or_treating = str_to_lower(trick_or_treating),
+  )
+```
+
+```{r}
+# Cleaning column names in boing boing 2016 data
+
+library(janitor)
+
+boing_boing_2016_clean_names <- clean_names(boing_boing_2016)
+
+boing_boing_2016_clean_names
+
+```
+
+```{r}
+# Cleaning boing boing 2016 data
+
+boing_boing_2016_clean <- boing_boing_2016_clean_names %>%
+  
+  # Removing all columns that are not needed for the analysis
+  select(
+    -timestamp,
+    -which_state_province_county_do_you_live_in,
+    -please_list_any_items_not_included_above_that_give_you_joy,
+    -please_list_any_items_not_included_above_that_give_you_despair,
+    -please_leave_any_witty_snarky_or_thoughtful_remarks_or_comments_regarding_your_choices,
+    -guess_the_number_of_mints_in_my_hand,
+    -betty_or_veronica,
+    -that_dress_that_went_viral_a_few_years_back_when_i_first_saw_it_it_was,
+    -what_is_your_favourite_font,
+    -please_estimate_the_degree_s_of_separation_you_have_from_the_following_celebrities_jk_rowling,
+    -please_estimate_the_degree_s_of_separation_you_have_from_the_following_celebrities_jj_abrams,
+    -please_estimate_the_degree_s_of_separation_you_have_from_the_following_celebrities_beyonce,
+    -please_estimate_the_degree_s_of_separation_you_have_from_the_following_celebrities_bieber,
+    -please_estimate_the_degree_s_of_separation_you_have_from_the_following_celebrities_kevin_bacon,
+    -please_estimate_the_degree_s_of_separation_you_have_from_the_following_celebrities_francis_bacon_1561_1626,
+    -which_day_do_you_prefer_friday_or_sunday,
+    -do_you_eat_apples_the_correct_way_east_to_west_side_to_side_or_do_you_eat_them_like_a_freak_of_nature_south_to_north_bottom_to_top,
+    -when_you_see_the_above_image_of_the_4_different_websites_which_one_would_you_most_likely_check_out_please_be_honest,
+    -york_peppermint_patties_ignore
+  ) %>%
+  
+  # Renaming "How old are you?", "Are you going actually going trick or treating yourself?", "your_gender" and "which_country_do_you_live_in" columns
+  rename(
+    trick_or_treating = "are_you_going_actually_going_trick_or_treating_yourself", 
+    gender = "your_gender", 
+    age = "how_old_are_you", 
+    country = "which_country_do_you_live_in"
+    ) %>%
+  
+  # Reshaping data into longer format
+  pivot_longer(
+    cols = x100_grand_bar:york_peppermint_patties, 
+    names_to = "questions",
+    values_to = "response"
+               ) %>%
+  
+  # Adding year column to help differeniate the data between each years responses
+  add_column(year = 2016) %>%
+  
+  # Tidying up the trick_or_treating, gender, age, country, and response columns so all numbers are whole numbers and all strings are lower case
+  
+  mutate(
+    trick_or_treating = str_to_lower(trick_or_treating),
+    gender = str_to_lower(gender),
+    age = as.integer(age),
+    country = str_to_lower(country),
+    response = str_to_lower(response)
+    ) %>%
+  
+  # Finding all the different variations of the country and grouping them by a single name
+  mutate(country = str_replace_all(country, "usa(.*)", "usa")) %>%
+  mutate(country = str_replace_all(country, "united s(.*)", "usa")) %>%
+  mutate(country = str_replace_all(country, "u.s(.*)", "usa")) %>%
+  mutate(country = str_replace_all(country, "merica(.*)", "usa")) %>%
+  mutate(country = str_replace_all(country, "murica(.*)", "usa")) %>%
+  mutate(country = str_replace_all(country, "ausa", "usa")) %>%
+  mutate(country = str_replace_all(country, "a tropical island south of the equator", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "united kindom", "uk")) %>%
+  mutate(country = str_replace_all(country, "neverland", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "this one", "usa")) %>%
+  mutate(country = str_replace_all(country, "units states", "usa")) %>%
+  mutate(country = str_replace_all(country, "the best one - usa", "usa")) %>%
+  mutate(country = str_replace_all(country, "cascadia", "usa")) %>%
+  mutate(country = str_replace_all(country, "the yoo ess of aaayyyyyy", "usa")) %>%
+  mutate(country = str_replace_all(country, "somewhere", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "god's country", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "there isn't one for old men", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "eua", "usa")) %>%
+  mutate(country = str_replace_all(country, "merca(.*)", "usa")) %>%
+  mutate(country = str_replace_all(country, "españa", "spain")) %>%
+  mutate(country = str_replace_all(country, "(.*)usa", "usa")) %>%
+  mutate(country = str_replace_all(country, "see above", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "denial", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "usaa", "usa")) %>%
+  mutate(country = str_replace_all(country, "^([1-9][0-9].*)$", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "one of the best ones", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "trump(.*)", "usa")) %>%
+  mutate(country = str_replace_all(country, "the neatherlands", "netherlands")) %>%
+  mutate(country = if_else(country == "us", NA_character_, country))
+
+
+```
+
+```{r}
+
+# Finding all the different variations of country names so I can group them under a single country name
+unique(boing_boing_2016_clean$country)
+
+```
+ 
+```{r}
+
+# Cleaning column names in boing boing 2017 data
+
+boing_boing_2017_clean_names <- clean_names(boing_boing_2017)
+
+boing_boing_2017_clean_names
+```
+ 
+```{r}
+# Cleaning boing boing 2017 data
+
+boing_boing_2017_clean <- boing_boing_2017_clean_names %>%
+  
+  # Removing all columns that are not needed for the analysis
+  select(
+    -internal_id,
+    -q5_state_province_county_etc,
+    -q7_joy_other,
+    -q8_despair_other,
+    -q9_other_comments,
+    -q10_dress,
+    -x114,
+    -q11_day,
+    -q12_media_daily_dish,
+    -q12_media_science,
+    -q12_media_espn,
+    -q12_media_yahoo,
+    -click_coordinates_x_y
+  ) %>%
+  
+  # Renaming columns
+  rename(
+    trick_or_treating = "q1_going_out",
+    gender = "q2_gender",
+    age = "q3_age",
+    country = "q4_country"
+    ) %>%
+  
+  # Reshaping data into longer format
+  pivot_longer(
+    cols = q6_100_grand_bar:q6_york_peppermint_patties,
+    names_to = "questions",
+    values_to = "response"
+  ) %>%
+  
+   # Adding year column to help differeniate the data between each years responses
+  add_column(year = 2017) %>%
+  
+   # Tidying up the trick_or_treating, gender, age, country, and response columns so all numbers are whole numbers and all strings are lower case
+  mutate(
+    trick_or_treating = str_to_lower(trick_or_treating),
+    gender = str_to_lower(gender),
+    age = as.integer(age),
+    country = str_to_lower(country),
+    response = str_to_lower(response)
+    ) %>%
+  
+  # Finding all the different variations of the country and grouping them by a single name
+  mutate(country = str_replace_all(country, "usa(.*)", "usa")) %>%
+  mutate(country = str_replace_all(country, "united s(.*)", "usa")) %>%
+  mutate(country = str_replace_all(country, "u.s(.*)", "usa")) %>%
+  mutate(country = str_replace_all(country, "merica(.*)", "usa")) %>%
+  mutate(country = str_replace_all(country, "murica(.*)", "usa")) %>%
+  mutate(country = str_replace_all(country, "ausa", "usa")) %>%
+  mutate(country = str_replace_all(country, "a tropical island south of the equator", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "united kindom", "uk")) %>%
+  mutate(country = str_replace_all(country, "neverland", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "this one", "usa")) %>%
+  mutate(country = str_replace_all(country, "units states", "usa")) %>%
+  mutate(country = str_replace_all(country, "the best one - usa", "usa")) %>%
+  mutate(country = str_replace_all(country, "cascadia", "usa")) %>%
+  mutate(country = str_replace_all(country, "the yoo ess of aaayyyyyy", "usa")) %>%
+  mutate(country = str_replace_all(country, "somewhere", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "god's country", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "there isn't one for old men", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "eua", "usa")) %>%
+  mutate(country = str_replace_all(country, "merca(.*)", "usa")) %>%
+  mutate(country = str_replace_all(country, "españa", "spain")) %>%
+  mutate(country = str_replace_all(country, "(.*)usa", "usa")) %>%
+  mutate(country = str_replace_all(country, "see above", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "denial", NA_character_)) %>%
+  mutate(country = str_replace_all(country,"us", "usa")) %>%
+  mutate(country = str_replace_all(country, "usaa", "usa")) %>%
+  mutate(country = str_replace_all(country, "^([1-9][0-9].*)$", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "one of the best ones", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "trump(.*)", "usa")) %>%
+  mutate(country = str_replace_all(country, "canae", "canada")) %>%
+  mutate(country = str_replace_all(country, "canada`", "canada")) %>%
+  mutate(country = str_replace_all(country, "atlantis", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "new y(.*)", "usa")) %>%
+  mutate(country = str_replace_all(country, "new j(.*)", "usa")) %>%
+  mutate(country = str_replace_all(country, "unites s(.*)", "usa")) %>%
+  mutate(country = str_replace_all(country, "north carolina", "usa")) %>%
+  mutate(country = str_replace_all(country, "europe", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "earth", NA_character_)) %>% 
+  mutate(country = str_replace_all(country, "pittsburgh", "usa")) %>%
+  mutate(country = str_replace_all(country, "insanity lately", "usa")) %>%
+  mutate(country = str_replace_all(country, "'usa", "usa")) %>%
+  mutate(country = str_replace_all(country, "california", "usa")) %>%
+  mutate(country = str_replace_all(country, "eua", "usa")) %>%
+  mutate(country = str_replace_all(country, "endland", "uk")) %>%
+  mutate(country = str_replace_all(country, "murrika", "usa")) %>%
+  mutate(country = str_replace_all(country, "alaska", "usa")) %>%
+  mutate(country = str_replace_all(country, "fear and loathing", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "the neatherlands", "netherlands")) %>%
+  mutate(country = str_replace_all(country, "can", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "narnia", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "unhinged states", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "ausa(.*)", "usa")) %>%
+  mutate(country = str_replace_all(country, "usa (.*)", "usa")) %>%
+  mutate(country = str_replace_all(country, "u.k.", "uk")) %>%
+  mutate(country = str_replace_all(country, "i don't know anymore", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "unied states", "usa")) %>%
+  mutate(country = str_replace_all(country, "unite states", "usa")) %>%
+  mutate(country = str_replace_all(country, "the netherlands", "netherlands")) %>%
+  mutate(country = str_replace_all(country, "^a$", NA_character_)) %>%
+  mutate(country = str_replace_all(country, "^1$", NA_character_)) %>%
+  mutate(country = if_else(country == "ud", NA_character_, country))
+  
+```
+ 
+```{r}
+unique(boing_boing_2017_clean$country)
+```
+
+```{r}
+
+boing_boing_data_combined <- bind_rows(boing_boing_2015_clean, boing_boing_2016_clean, boing_boing_2017_clean)
+```
+ 
+```{r}
+view(boing_boing_data_combined)
+```
+ 
+ 
+  
