@@ -1,0 +1,125 @@
+
+```{r}
+# Loading in libraries
+library(tidyverse)
+
+# Reading in cleaned Decathlon data for analysis
+decathlon_data <- read_csv(here("/3_clean_data/clean_decathlon_data.csv")) 
+
+decathlon_data
+
+# Reviewing cleaned data in R
+view(decathlon_data)
+
+```
+
+1. Who had the longest long jump seen in the data? 
+
+`clay`
+
+```{r}
+
+longest_jump <- decathlon_data %>%
+  select(athlete_names, event, time_distance) %>%
+  filter(event == "long_jump") %>%
+  arrange(desc(time_distance))
+  
+longest_jump
+  
+  
+```
+
+2. What was the average 100m time in each competition?
+
+```{r}
+
+decastar_average_100m_time <- decathlon_data %>%
+  select(event, time_distance, competition) %>%
+  group_by(competition) %>%
+  filter(event == "x100m", competition == "Decastar") %>%
+  summarise(average_100m_time = mean(time_distance))
+  
+decastar_average_100m_time
+
+```
+
+```{r}
+
+olympicg_average_100m_time <- decathlon_data %>%
+  select(event, time_distance, competition) %>%
+  group_by(competition) %>%
+  filter(event == "x100m", competition == "OlympicG") %>%
+  summarise(average_100m_time = mean(time_distance))
+  
+olympicg_average_100m_time
+
+```
+
+3. Who had the highest total points across both competitions?
+
+```{r}
+
+highest_score_per_competition <- decathlon_data %>% 
+  select(athlete_names, total_points, competition) %>%
+  group_by(competition) %>%
+  summarise(highest_scores = max(total_points)) %>%
+  arrange(desc(highest_scores))
+
+highest_score_per_competition
+
+```
+
+4. What was the shot-put scores for the top three competitors in each competition?
+
+```{r}
+
+shot_putters_decastar <- decathlon_data %>%
+  group_by(competition)%>%
+  filter(event == "shot_put", competition == "Decastar") %>%
+  mutate(rank = min_rank(desc(time_distance))) %>%
+  arrange(desc(time_distance))
+
+top_three_shot_putters_decastar <- shot_putters_decastar %>%
+  filter(rank <= 3)
+
+top_three_shot_putters_decastar
+
+```
+
+```{r}
+
+shot_putters_olympicg <- decathlon_data %>%
+  group_by(competition)%>%
+  filter(event == "shot_put", competition == "OlympicG") %>%
+  mutate(rank = min_rank(desc(time_distance))) %>%
+  arrange(desc(time_distance))
+
+top_three_shot_putters_olympicg <- shot_putters_olympicg %>%
+  filter(rank <= 3)
+
+top_three_shot_putters_olympicg
+
+```
+
+5. What was the average points for competitors who ran the 400m in less than 50 seconds vs. those than ran 400m in more than 50 seconds?
+
+```{r}
+
+decathlon_data %>%
+  filter(event == "x400m", time_distance < 50) %>%
+  summarise(average_points_under_50s = mean(total_points))
+
+```
+
+```{r}
+
+decathlon_data %>%
+  filter(event == "x400m", time_distance > 50) %>%
+  summarise(average_points_over_50s = mean(total_points))
+
+```
+
+
+
+
+

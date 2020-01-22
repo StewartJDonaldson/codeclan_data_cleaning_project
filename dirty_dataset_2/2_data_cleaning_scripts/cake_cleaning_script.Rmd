@@ -1,0 +1,62 @@
+
+```{r}
+
+# Loading in libraries
+library(tidyverse)
+library(here)
+library(readr)
+
+# Reading in dirty data sets
+cake_data <- read_csv(here("1_raw_data/cake-ingredients-1961.csv"))
+cake_ingredients <- read_csv(here("1_raw_data/cake_ingredient_code.csv"))
+
+# Reviewing data before cleaning it
+dim(cake_data)
+cake_data
+names(cake_data)
+view(cake_data)
+view(cake_ingredients)
+
+```
+
+```{r}
+
+# Changing BM from logical vector to a double vector
+cake_data <- cake_data %>%
+  mutate(BM = as.double(cake_data$BM))
+  
+cake_data
+
+```
+
+```{r}
+
+# Putting data into longer format and removing NA values
+cake_data_clean <- pivot_longer(cake_data, 
+                                -Cake, 
+                                names_to = "code", 
+                                values_to = "measurement",
+                                values_drop_na = TRUE
+                                )
+
+cake_data_clean
+
+# Joining cake-ingredients-1961.csv and cake_ingredient_code.csv together
+cake_data_joined <-left_join(cake_data_clean, cake_ingredients, "code")
+
+cake_data_joined <- cake_data_joined %>%
+  mutate(Cake = str_to_lower(Cake), ingredient = str_to_lower(ingredient)) %>%
+  rename(cake = Cake)
+
+cake_data_joined
+
+```
+
+
+```{r}
+
+# Writing cleaned data to csv
+write_csv(cake_data_joined, here("/3_clean_data/cleaned_cake_data.csv"))
+
+```
+

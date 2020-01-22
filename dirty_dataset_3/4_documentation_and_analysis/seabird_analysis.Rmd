@@ -1,0 +1,75 @@
+```{r}
+
+# Loading in libraries
+library(tidyverse)
+library(here)
+
+# Reading in cleaned data set
+seabird_data <- read_csv(here("3_clean_data/seabird_data_clean.csv"))
+
+```
+
+1. Which bird had the most individual sightings?
+
+```{r}
+
+seabird_data %>%
+  # Getting the three types of bird names as per the analysis brief
+  group_by(species_common_name, species_scientific_name, species_abbreviation) %>%
+  # Finding the total number of individual sightings
+  summarise(most_sightings = sum(total_birds_counted)) %>%
+  # Arranging highest to lowest to find the bird with the highest no. of individual sightings
+  arrange(desc(most_sightings))
+  
+```
+
+2. Which bird had the highest total count?
+
+```{r}
+
+seabird_data %>%
+  # Getting the three types of bird names as per the analysis brief
+  group_by(species_common_name, species_scientific_name, species_abbreviation) %>%
+  # Counting the number of instances a bird is counted
+  count() %>%
+  # Giving the column a better name
+  rename(total_count = n) %>%
+  # Arranging the total count column highest to lowest to find the bird with the highest count number
+  arrange(desc(total_count))
+
+```
+
+3. Which bird had the highest total count above a latitude of -30?
+
+```{r}
+
+seabird_data %>%
+  group_by(species_common_name, species_scientific_name, species_abbreviation, latitude) %>%
+  filter(latitude > -30) %>%
+  count(species_scientific_name) %>%
+  rename(total_count = n) %>%
+  arrange(desc(total_count))
+  
+```
+
+4. How many different types of birds were only ever seen in groups of 1?
+
+```{r}
+
+seabird_data %>%
+  select(species_common_name, species_scientific_name, species_abbreviation, total_birds_counted) %>%
+  group_by(species_common_name, species_scientific_name, species_abbreviation) %>%
+  filter(total_birds_counted == 1)
+
+```
+
+5. How many penguins were seen? (Hint: there are many types of penguin)
+
+```{r}
+
+seabird_data %>%
+  filter(str_detect(species_common_name, 'penguin')) %>%
+  summarise(total_penguins_seen = sum(total_birds_counted, na.rm = TRUE))
+
+```
+

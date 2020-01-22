@@ -1,0 +1,2 @@
+load("/Users/stewartdonaldson/4_data_cleaning_project/task_1/1_raw_data/decathlon.rds")
+load("/Users/stewartdonaldson/codeclan_data_cleaning_project/dirty_dataset_1/1_raw_data/decathlon.rds")

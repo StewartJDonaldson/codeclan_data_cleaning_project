@@ -1,0 +1,67 @@
+
+```{r}
+# Loading libraries
+library(readr)
+library(here)
+library(tidyverse)
+library(janitor)
+
+# Setting working directory
+here::here()
+
+# Reading in decatholon data
+decathlon_data <- read_rds(here("1_raw_data/decathlon.rds"))
+
+```
+
+
+```{r}
+# Reviewing data 
+
+# Checking dimensions
+dim(decathlon_data)
+
+# Review variable names of decathlon data
+names(decathlon_data)
+
+# Reviewing structure of decathlon data
+head(decathlon_data, 10)
+tail(decathlon_data, 10)
+view(decathlon_data)
+
+```
+
+```{r}
+# cleaning data
+
+decathlon_data_clean <- 
+  
+  # Cleaning column names
+  clean_names(decathlon_data) %>% 
+  
+  # Moving row of names to a seperate column called "athlete_names"
+  rownames_to_column(var = "athlete_names") %>% 
+  
+  #Renaming "points" to "total_points"
+  rename(total_points = points) %>% 
+  
+  #Converting all names to lowercase
+  mutate(athlete_names = str_to_lower(athlete_names)) %>% 
+  
+  #Pivoting the data into long format
+  pivot_longer(cols = c("x100m", "x400m", "long_jump", "shot_put"),
+             names_to = "event",
+             values_to = "time_distance") %>%
+  
+  #Selecting only the rows necessary for the analysis questions in 1.1.2
+  select(athlete_names, event, time_distance, total_points, competition) 
+  
+```
+
+```{r}
+# Writing cleaned Decathlon data to CSV
+write_csv(decathlon_data_clean, here("/3_clean_data/clean_decathlon_data.csv"))
+```
+
+
+
